@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-import mysql.connector  # Use mysql.connector for MySQL
+import mysql.connector
+import re  # for simple email validation
 
 app = Flask(__name__)
 app.secret_key = "yoursecretkey"  # Needed for flash messages
@@ -21,17 +22,112 @@ def get_db_connection():
         return None
 
 # -----------------------
+# Helper Functions
+# -----------------------
+def is_valid_email(email):
+    # Basic email regex
+    return re.match(r"[^@]+@[^@]+\.[^@]+", email)
+
+def is_valid_phone(phone):
+    # Basic phone validation (numbers only, min 7 digits)
+    return phone.isdigit() and len(phone) >= 7
+
+# -----------------------
 # Home route
+# -----------------------
+
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+import mysql.connector
+
+app = Flask(__name__)
+app.secret_key = "yoursecretkey"  # Needed for session and flash
+
+# -----------------------------
+# MySQL Connection Function
+# -----------------------------
+def get_db_connection():
+    try:
+        conn = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="ClassX2025@!",  # Replace with your MySQL root password
+            database="classx_db"
+        )
+        return conn
+    except mysql.connector.Error as e:
+        print(f"Error connecting to MySQL: {e}")
+        return None
+
+# -----------------------
+# Home Route
 # -----------------------
 @app.route('/')
 def home():
-    return render_template('home.html', title='Home')
+    total_students = 0
+    conn = get_db_connection()
+    if conn:
+        cursor = conn.cursor()
+        try:
+            cursor.execute("SELECT COUNT(*) FROM enrollments")
+            total_students = cursor.fetchone()[0]  # Get the count
+        except mysql.connector.Error as e:
+            print(f"Database Error: {e}")
+        finally:
+            cursor.close()
+            conn.close()
+
+    return render_template('home.html', title='Home', total_students=total_students)
+
+
+# -----------------------
+# Login Route (GET + POST)
+# -----------------------
+# -----------------------
+# Login Route (GET + POST)
+# -----------------------
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        phone = request.form['phone']  # phone is the password
+
+        conn = get_db_connection()
+        if conn:
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM enrollments WHERE email=%s AND phone=%s", (email, phone))
+            user = cursor.fetchone()
+            cursor.close()
+            conn.close()
+
+            if user:
+                session['user_id'] = user['id']
+                session['user_name'] = user['first_name']
+                flash(f"Welcome back, {user['first_name']}!", "success")
+                return redirect(url_for('dashboard'))
+            else:
+                flash("Invalid email or phone number!", "danger")
+
+    return render_template('login.html', title='Login')
+
+
+# -----------------------
+# Logout Route
+# -----------------------
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash("Logged out successfully!", "success")
+    return redirect(url_for('home'))
 
 # -----------------------
 # Enroll Page (GET + POST)
 # -----------------------
 @app.route('/enroll', methods=['GET', 'POST'])
 def enroll():
+    if 'user_id' not in session:
+        flash("Please login to enroll!", "warning")
+        return redirect(url_for('login'))
+
     if request.method == 'POST':
         # Capture all form fields
         first_name = request.form['firstName']
@@ -45,19 +141,23 @@ def enroll():
         schedule = request.form.get('schedule')
         newsletter = 1 if request.form.get('newsletter') else 0
 
-        # Save to Database
+        # Check if email or phone already exists
         conn = get_db_connection()
         if conn:
             cursor = conn.cursor()
             try:
-                cursor.execute("""
-                    INSERT INTO enrollments
-                    (first_name, last_name, email, phone, course, education, experience, motivation, schedule, newsletter)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """, (first_name, last_name, email, phone, course, education, experience, motivation, schedule, newsletter))
-
-                conn.commit()
-                flash("Enrollment successful!", "success")
+                cursor.execute("SELECT * FROM enrollments WHERE email=%s OR phone=%s", (email, phone))
+                existing = cursor.fetchone()
+                if existing:
+                    flash("Email or phone number already enrolled!", "warning")
+                else:
+                    cursor.execute("""
+                        INSERT INTO enrollments
+                        (first_name, last_name, email, phone, course, education, experience, motivation, schedule, newsletter)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """, (first_name, last_name, email, phone, course, education, experience, motivation, schedule, newsletter))
+                    conn.commit()
+                    flash("Enrollment successful!", "success")
             except mysql.connector.Error as e:
                 flash(f"Database Error: {e}", "danger")
             finally:
@@ -69,8 +169,12 @@ def enroll():
     return render_template('enroll.html', title='Sign Up')
 
 # -----------------------
-# Other routes
+# Other Routes
 # -----------------------
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html', title='Dashboard')
+
 @app.route('/about')
 def about():
     return render_template('about.html', title='About')
@@ -98,10 +202,6 @@ def course_details():
 @app.route('/courses')
 def courses():
     return render_template('courses.html', title='Courses')
-
-@app.route('/login')
-def login():
-    return render_template('login.html', title='Login')
 
 @app.route('/events')
 def events():
