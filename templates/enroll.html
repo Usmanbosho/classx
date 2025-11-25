@@ -1,0 +1,254 @@
+{% include 'includes/header.html' %}
+<main class="main">
+
+  <!-- Page Title -->
+  <div class="page-title light-background">
+    <div class="container d-lg-flex justify-content-between align-items-center">
+      <h1 class="mb-2 mb-lg-0">Student Enrollment</h1>
+      <nav class="breadcrumbs">
+        <ol>
+          <li><a href="/">Home</a></li>
+          <li class="current">Sign Up</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+  <!-- End Page Title -->
+
+  <!-- Enroll Section -->
+  <section id="enroll" class="enroll section">
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+      <div class="row">
+        <!-- FORM COLUMN -->
+        <div class="col-lg-8 mx-auto">
+          <div class="enrollment-form-wrapper">
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <!-- Header -->
+            <div class="enrollment-header text-center mb-5" data-aos="fade-up" data-aos-delay="200">
+              <h2>Join a Course and Start Learning Today</h2>
+              <p>Fill in your details to enroll in one of our beginner-friendly tech programs. Learn at your own pace, gain real-world skills, and begin your journey as a tech professional.</p>
+            </div>
+
+            <!-- Enrollment Form -->
+            <form class="enrollment-form" method="POST" action="{{ url_for('enroll') }}" data-aos="fade-up" data-aos-delay="300">
+
+              <!-- Name -->
+              <div class="row mb-4">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="firstName" class="form-label">First Name *</label>
+                    <input type="text" id="firstName" name="firstName" class="form-control" required autocomplete="given-name">
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="lastName" class="form-label">Last Name *</label>
+                    <input type="text" id="lastName" name="lastName" class="form-control" required autocomplete="family-name">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Email + Phone -->
+              <div class="row mb-4">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="email" class="form-label">Email Address *</label>
+                    <input type="email" id="email" name="email" class="form-control" required autocomplete="email">
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="phone" class="form-label">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" class="form-control" autocomplete="tel">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Course Selection -->
+              <div class="row mb-4">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="course" class="form-label">Select Course *</label>
+                    <select id="course" name="course" class="form-select" required>
+                      <option value="">Choose a course...</option>
+                      <option value="web-dev">Full Stack Web Development</option>
+                      <option value="cybersecurity">Cybersecurity Essentials</option>
+                      <option value="computer-it">Computer & IT Essentials</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Education & Experience -->
+              <div class="row mb-4">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="education" class="form-label">Education Level</label>
+                    <select id="education" name="education" class="form-select">
+                      <option value="">Select education level...</option>
+                      <option value="high-school">High School</option>
+                      <option value="undergraduate">Undergraduate</option>
+                      <option value="graduate">Graduate</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="experience" class="form-label">Experience Level</label>
+                    <select id="experience" name="experience" class="form-select">
+                      <option value="">Select experience level...</option>
+                      <option value="beginner">Beginner</option>
+                      <option value="intermediate">Intermediate</option>
+                      <option value="advanced">Advanced</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Motivation -->
+              <div class="row mb-4">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label for="motivation" class="form-label">Why do you want to take this course?</label>
+                    <textarea id="motivation" name="motivation" class="form-control" rows="4" placeholder="Tell us your learning goals and what you hope to accomplish..."></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Learning Schedule -->
+              <div class="row mb-4">
+                <div class="col-12">
+                  <div class="form-group">
+                    <label class="form-label">Preferred Learning Schedule</label>
+                    <div class="schedule-options">
+
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="schedule" id="weekdays" value="weekdays">
+                        <label class="form-check-label" for="weekdays">Weekdays</label>
+                      </div>
+
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="schedule" id="weekends" value="weekends">
+                        <label class="form-check-label" for="weekends">Weekends</label>
+                      </div>
+
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="schedule" id="flexible" value="flexible" checked>
+                        <label class="form-check-label" for="flexible">Flexible / Self-paced</label>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Terms & Newsletter -->
+              <div class="row mb-4">
+                <div class="col-12">
+                  <div class="form-group">
+                    <div class="agreement-section">
+
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                        <label class="form-check-label" for="terms">
+                          I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a> *
+                        </label>
+                      </div>
+
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="newsletter" name="newsletter">
+                        <label class="form-check-label" for="newsletter">
+                          Send me course updates and learning resources
+                        </label>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit -->
+              <div class="row">
+                <div class="col-12 text-center">
+                  <button type="submit" class="btn btn-enroll">
+                    <i class="bi bi-check-circle me-2"></i>
+                    Enroll Now
+                  </button>
+                  <p class="enrollment-note mt-3">
+                    <i class="bi bi-shield-check"></i>
+                    Your details are safe and protected
+                  </p>
+                </div>
+              </div>
+
+            </form>
+          </div>
+        </div>
+        <!-- END FORM COLUMN -->
+
+        <!-- BENEFITS COLUMN -->
+        <div class="col-lg-4 d-none d-lg-block">
+          <div class="enrollment-benefits" data-aos="fade-left" data-aos-delay="400">
+
+            <h3>Why Learn With Us?</h3>
+
+            <div class="benefit-item">
+              <div class="benefit-icon"><i class="bi bi-trophy"></i></div>
+              <div class="benefit-content">
+                <h4>Professional Instructors</h4>
+                <p>Learn directly from industry experts with practical, real-world experience.</p>
+              </div>
+            </div>
+
+            <div class="benefit-item">
+              <div class="benefit-icon"><i class="bi bi-clock"></i></div>
+              <div class="benefit-content">
+                <h4>Flexible Learning</h4>
+                <p>Access lessons anytime and learn at the pace that works for you.</p>
+              </div>
+            </div>
+
+            <div class="benefit-item">
+              <div class="benefit-icon"><i class="bi bi-award"></i></div>
+              <div class="benefit-content">
+                <h4>Verified Certificates</h4>
+                <p>Earn certificates to showcase your skills and grow your career.</p>
+              </div>
+            </div>
+
+            <div class="benefit-item">
+              <div class="benefit-icon"><i class="bi bi-people"></i></div>
+              <div class="benefit-content">
+                <h4>Learning Community</h4>
+                <p>Join students like you, ask questions, and get support anytime.</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <!-- END BENEFITS COLUMN -->
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+{% include 'includes/footer.html' %}
