@@ -1,25 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+
 import mysql.connector
 import re  # for simple email validation
 
-app = Flask(__name__)
-app.secret_key = "yoursecretkey"  # Needed for flash messages
-
-# -----------------------------
-# MySQL Connection Function
-# -----------------------------
-def get_db_connection():
-    try:
-        conn = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="ClassX2025@!",  # Replace with your MySQL root password
-            database="classx_db"      # Your database name
-        )
-        return conn
-    except mysql.connector.Error as e:
-        print(f"Error connecting to MySQL: {e}")
-        return None
 
 # -----------------------
 # Helper Functions
@@ -32,19 +15,6 @@ def is_valid_phone(phone):
     # Basic phone validation (numbers only, min 7 digits)
     return phone.isdigit() and len(phone) >= 7
 
-# -----------------------
-# Home route
-# -----------------------
-
-from flask import Flask, render_template, request, redirect, url_for, flash, session
-import mysql.connector
-
-app = Flask(__name__)
-app.secret_key = "yoursecretkey"  # Needed for session and flash
-
-# -----------------------------
-# MySQL Connection Function
-# -----------------------------
 def get_db_connection():
     try:
         conn = mysql.connector.connect(
@@ -57,6 +27,10 @@ def get_db_connection():
     except mysql.connector.Error as e:
         print(f"Error connecting to MySQL: {e}")
         return None
+
+app = Flask(__name__)
+app.secret_key = "yoursecretkey"  # Needed for session and flash
+
 
 # -----------------------
 # Home Route
@@ -89,25 +63,27 @@ def home():
 def login():
     if request.method == 'POST':
         email = request.form['email']
-        phone = request.form['phone']  # phone is the password
+        phone = request.form['phone']  # password
 
         conn = get_db_connection()
-        if conn:
-            cursor = conn.cursor(dictionary=True)
-            cursor.execute("SELECT * FROM enrollments WHERE email=%s AND phone=%s", (email, phone))
-            user = cursor.fetchone()
-            cursor.close()
-            conn.close()
+        cursor = conn.cursor(dictionary=True)
 
-            if user:
-                session['user_id'] = user['id']
-                session['user_name'] = user['first_name']
-                flash(f"Welcome back, {user['first_name']}!", "success")
-                return redirect(url_for('dashboard'))
-            else:
-                flash("Invalid email or phone number!", "danger")
+        cursor.execute("SELECT * FROM enrollments WHERE email=%s AND phone=%s", (email, phone))
+        user = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
+        if user:
+            session['student_id'] = user['id']
+            session['student_name'] = user['first_name']
+            flash("Login successful!", "success")
+            return redirect(url_for('dashboard'))
+        else:
+            flash("Invalid email or phone number!", "danger")
 
     return render_template('login.html', title='Login')
+
 
 
 # -----------------------
@@ -124,9 +100,9 @@ def logout():
 # -----------------------
 @app.route('/enroll', methods=['GET', 'POST'])
 def enroll():
-    if 'user_id' not in session:
-        flash("Please login to enroll!", "warning")
-        return redirect(url_for('login'))
+    # if 'user_id' not in session:
+    #     flash("Please login to enroll!", "warning")
+    #     return redirect(url_for('login'))
 
     if request.method == 'POST':
         # Capture all form fields
@@ -171,9 +147,46 @@ def enroll():
 # -----------------------
 # Other Routes
 # -----------------------
+# -----------------------
+# Student Dashboard
+# -----------------------
 @app.route('/dashboard')
 def dashboard():
-    return render_template('dashboard.html', title='Dashboard')
+    if 'student_id' not in session:
+        flash("Please log in first!", "warning")
+        return redirect(url_for('login'))
+    # Fetch student info from DB
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM enrollments WHERE id=%s", (session['student_id'],))
+    student = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return render_template('dashboard.html', title="Dashboard", student=student)
+
+@app.route('/course')
+def course():
+    return render_template('course.html', title="My Courses")
+
+# @app.route('/enroll')
+# def enroll():
+#     return render_template('enroll.html', title="Enroll New Course")
+
+@app.route('/profile')
+def profile():
+    return render_template('profile.html', title="Profile")
+
+@app.route('/certificates')
+def certificates():
+    return render_template('certificates.html', title="Progress & Certificates")
+
+@app.route('/messages')
+def messages():
+    return render_template('messages.html', title="Messages")
+
+@app.route('/support')
+def support():
+    return render_template('support.html', title="Support")
 
 @app.route('/about')
 def about():

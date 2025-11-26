@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{title}} - LearnSpace</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../static/assets/css/dashboard.css" />
+  <link rel="shortcut icon" href="../static/assets/img/logo.jpg" type="image/x-icon">
+ 
+</head>
+<body>
+ 
+  <div class="container">
+    <!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+    <!-- SIDEBAR HEADER -->
+    <div class="sidebar-header">
+      <div class="logo">
+        <img src="../static/assets/img/image_logo.png" width="200"  alt="logo">
+      </div>
+      <div class="close-btn" onclick="toggleSidebar()">
+        <i class="fa-solid fa-xmark"></i>
+      </div>
+    </div>
+
+    <!-- STUDENT INFO -->
+    <!-- <div class="student-box">
+      <img src="../static/assets/img/user.png" alt="Profile" class="student-avatar">
+      <h3 class="student-name">{{ session['fullname'] }}</h3>
+      <p class="student-email">{{ session['email'] }}</p>
+      <p class="student-id">ID: {{ session['student_id'] }}</p>
+    </div> -->
+
+    
+
+    <!-- MENU -->
+    <nav class="nav-links">
+        <hr class="divider">  
+      <a href="dashboard"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+        <hr class="divider">
+      <a href="courses"><i class="fa-solid fa-book"></i> My Courses</a>
+        <hr class="divider">
+      <a href="enroll"><i class="fa-solid fa-square-plus"></i> Enroll New Course</a>
+        <hr class="divider">
+      <a href="profile"><i class="fa-solid fa-user"></i> Profile</a>
+        <hr class="divider">
+      <a href="certificates"><i class="fa-solid fa-certificate"></i> Progress & Certificates</a>
+        <hr class="divider">
+      <a href="messages"><i class="fa-solid fa-envelope"></i> Messages</a>
+        <hr class="divider">
+      <a href="support"><i class="fa-solid fa-headset"></i> Support</a>
+        <hr class="divider">
+      <a href="logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        <hr class="divider">
+    </nav>
+</aside>
+
+  
