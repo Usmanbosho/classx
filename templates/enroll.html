@@ -1,261 +1,115 @@
-{% include 'includes/header.html' %}
-<main class="main">
+{% include 'includes/d_header.html' %}
 
-  <!-- Page Title -->
-  <div class="page-title light-background">
-    <div class="container d-lg-flex justify-content-between align-items-center">
-      <h1 class="mb-2 mb-lg-0">Student Enrollment</h1>
-      <nav class="breadcrumbs">
-        <ol>
-          <li><a href="/">Home</a></li>
-          <li class="current">Sign Up</li>
-        </ol>
-      </nav>
-    </div>
-  </div>
-  <!-- End Page Title -->
+<main class="main-content">
 
-  <!-- Enroll Section -->
-  <section id="enroll" class="enroll section">
-    <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-      <div class="row">
-        <!-- FORM COLUMN -->
-        <div class="col-lg-8 mx-auto">
-          <div class="enrollment-form-wrapper">
-
-            <!-- Flash Messages -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-              {% if messages %}
-                {% for category, message in messages %}
-                  <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                  </div>
-                {% endfor %}
-              {% endif %}
-            {% endwith %}
-
-            <!-- Header -->
-            <div class="enrollment-header text-center mb-5" data-aos="fade-up" data-aos-delay="200">
-              <h2>Join a Course and Start Learning Today</h2>
-              <p>Fill in your details to enroll in one of our beginner-friendly tech programs. Learn at your own pace, gain real-world skills, and begin your journey as a tech professional.</p>
-            </div>
-
-            <!-- Enrollment Form -->
-            <form class="enrollment-form" method="POST" action="{{ url_for('enroll') }}" data-aos="fade-up" data-aos-delay="300">
-
-              <!-- Name -->
-              <div class="row mb-4">
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label for="firstName" class="form-label">First Name *</label>
-                    <input type="text" id="firstName" name="firstName" class="form-control" required autocomplete="given-name">
-                  </div>
-                </div>
-
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label for="lastName" class="form-label">Last Name *</label>
-                    <input type="text" id="lastName" name="lastName" class="form-control" required autocomplete="family-name">
-                  </div>
-                </div>
-              </div>
-
-              <!-- Email + Phone -->
-              <div class="row mb-4">
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label for="email" class="form-label">Email Address *</label>
-                    <input type="email" id="email" name="email" class="form-control" required autocomplete="email">
-                  </div>
-                </div>
-
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label for="phone" class="form-label">Phone Number</label>
-                    <input type="number" id="phone" name="phone" class="form-control" autocomplete="tel">
-                  </div>
-                </div>
-              </div>
-
-              <!-- Course Selection -->
-              <div class="row mb-4">
-                <div class="col-12">
-                  <div class="form-group">
-                    <label for="course" class="form-label">Select Course *</label>
-                    <select id="course" name="course" class="form-select" required>
-                      <option value="">Choose a course...</option>
-                      <option value="web-dev">Full Stack Web Development</option>
-                      <option value="cybersecurity">Cybersecurity Essentials</option>
-                      <option value="computer-it">Computer & IT Essentials</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Education & Experience -->
-              <div class="row mb-4">
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label for="education" class="form-label">Education Level</label>
-                    <select id="education" name="education" class="form-select">
-                      <option value="">Select education level...</option>
-                      <option value="high-school">High School</option>
-                      <option value="undergraduate">Undergraduate</option>
-                      <option value="graduate">Graduate</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label for="experience" class="form-label">Experience Level</label>
-                    <select id="experience" name="experience" class="form-select">
-                      <option value="">Select experience level...</option>
-                      <option value="beginner">Beginner</option>
-                      <option value="intermediate">Intermediate</option>
-                      <option value="advanced">Advanced</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Motivation -->
-              <div class="row mb-4">
-                <div class="col-12">
-                  <div class="form-group">
-                    <label for="motivation" class="form-label">Why do you want to take this course?</label>
-                    <textarea id="motivation" name="motivation" class="form-control" rows="4" placeholder="Tell us your learning goals and what you hope to accomplish..."></textarea>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Learning Schedule -->
-              <div class="row mb-4">
-                <div class="col-12">
-                  <div class="form-group">
-                    <label class="form-label">Preferred Learning Schedule</label>
-                    <div class="schedule-options">
-
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="schedule" id="weekdays" value="weekdays">
-                        <label class="form-check-label" for="weekdays">Weekdays</label>
-                      </div>
-
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="schedule" id="weekends" value="weekends">
-                        <label class="form-check-label" for="weekends">Weekends</label>
-                      </div>
-
-                      <div class="form-check">
-                        <input class="form-check-input" type="radio" name="schedule" id="flexible" value="flexible" checked>
-                        <label class="form-check-label" for="flexible">Flexible / Self-paced</label>
-                      </div>
-
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Terms & Newsletter -->
-              <div class="row mb-4">
-                <div class="col-12">
-                  <div class="form-group">
-                    <div class="agreement-section">
-
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
-                        <label class="form-check-label" for="terms">
-                          I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a> *
-                        </label>
-                      </div>
-
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="newsletter" name="newsletter">
-                        <label class="form-check-label" for="newsletter">
-                          Send me course updates and learning resources
-                        </label>
-                      </div>
-
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Submit -->
-              <div class="row">
-                <div class="col-12 text-center">
-                  <button type="submit" class="btn btn-enroll">
-                    <i class="bi bi-check-circle me-2"></i>
-                    Enroll Now
-                  </button>
-                  <p class="enrollment-note mt-3">
-                    <i class="bi bi-shield-check"></i>
-                    Your details are safe and protected
-                  </p>
-                </div>
-              </div>
-              <div class="row mt-3">
-                <div class="col-12 text-center">
-                  <p>
-                   Already have Account? <a href="{{ url_for('login') }}">Sign In</a>
-                  </p>
-                </div>
-              </div>
-
-            </form>
-          </div>
+  <!-- TOP BAR -->
+  <header class="top-bar">
+    <div class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></div>
+    <div class="profile-info">
+      <span><b onclick="toggleProfileMenu()" style="font-size: 11px; color: rgb(111, 111, 111); margin-left: 90px;">Profile <i class="fas fa-chevron-down"></i></b></span>
+      <div class="profile-dropdown-wrapper">
+        <div class="avatar" onclick="toggleProfileMenu()"></div>
+        <div class="dropdown" id="profileDropdown">
+          <a href="#"><i class="fa-solid fa-arrow-left"></i> Back to Registration</a>
+          <a href="#"><i class="fa-solid fa-user-gear"></i> Manage Profile</a>
+          <a href="logout"><i class="fa-solid fa-right-from-bracket"></i> Sign out</a>
         </div>
-        <!-- END FORM COLUMN -->
-
-        <!-- BENEFITS COLUMN -->
-        <div class="col-lg-4 d-none d-lg-block">
-          <div class="enrollment-benefits" data-aos="fade-left" data-aos-delay="400">
-
-            <h3>Why Learn With Us?</h3>
-
-            <div class="benefit-item">
-              <div class="benefit-icon"><i class="bi bi-trophy"></i></div>
-              <div class="benefit-content">
-                <h4>Professional Instructors</h4>
-                <p>Learn directly from industry experts with practical, real-world experience.</p>
-              </div>
-            </div>
-
-            <div class="benefit-item">
-              <div class="benefit-icon"><i class="bi bi-clock"></i></div>
-              <div class="benefit-content">
-                <h4>Flexible Learning</h4>
-                <p>Access lessons anytime and learn at the pace that works for you.</p>
-              </div>
-            </div>
-
-            <div class="benefit-item">
-              <div class="benefit-icon"><i class="bi bi-award"></i></div>
-              <div class="benefit-content">
-                <h4>Verified Certificates</h4>
-                <p>Earn certificates to showcase your skills and grow your career.</p>
-              </div>
-            </div>
-
-            <div class="benefit-item">
-              <div class="benefit-icon"><i class="bi bi-people"></i></div>
-              <div class="benefit-content">
-                <h4>Learning Community</h4>
-                <p>Join students like you, ask questions, and get support anytime.</p>
-              </div>
-            </div>
-
-          </div>
-        </div>
-        <!-- END BENEFITS COLUMN -->
-
       </div>
     </div>
-  </section>
+  </header>
 
-</main>
+  <!-- ENROLLMENT SECTION -->
+  <div class="">
+    <section class="enrollment-section">
+      <div class="container_enroll">
+        <div class="row">
 
-{% include 'includes/footer.html' %}
+          <!-- FORM COLUMN -->
+          <div class="col-lg-8">
+            <div class="enrollment-form" data-aos="fade-right" data-aos-delay="200">
+
+              <h2>Enroll in a New Course</h2>
+              <p>Fill out the form below to enroll in your desired course.</p>
+
+              <form method="POST" action="{{ url_for('enroll') }}">
+
+                <!-- Conditional First Name -->
+                {% if not user.first_name %}
+                <div class="form-group">
+                  <label for="first_name">First Name</label>
+                  <input type="text" id="first_name" name="first_name" required>
+                </div>
+                {% endif %}
+
+                <!-- Conditional Last Name -->
+                {% if not user.last_name %}
+                <div class="form-group">
+                  <label for="last_name">Last Name</label>
+                  <input type="text" id="last_name" name="last_name" required>
+                </div>
+                {% endif %}
+
+                <!-- Conditional Phone -->
+                {% if not user.phone %}
+                <div class="form-group">
+                  <label for="phone">Phone Number</label>
+                  <input type="tel" id="phone" name="phone" required>
+                </div>
+                {% endif %}
+
+                <!-- Course Selection -->
+                <div class="form-group">
+                  <label for="course">Select Course</label>
+                  <select id="course" name="course" required>
+                    <option value="">Choose a course...</option>
+                    <option value="web-development">Full Stack Web Development</option>
+                    <option value="data-science">Data Science & Analytics</option>
+                    <option value="digital-marketing">Digital Marketing Mastery</option>
+                    <option value="ui-ux-design">UI/UX Design Fundamentals</option>
+                    <option value="cybersecurity">Cybersecurity Essentials</option>
+                    <option value="mobile-development">Mobile App Development</option>
+                  </select>
+                </div>
+
+                <!-- Experience Selection -->
+                <div class="form-group">
+                  <label for="experience">Experience Level</label>
+                  <select id="experience" name="experience">
+                    <option value="">Select your experience...</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                    <option value="expert">Expert</option>
+                  </select>
+                </div>
+
+                <!-- Motivation -->
+                <div class="form-group">
+                  <label for="motivation">What motivates you to take this course?</label>
+                  <textarea id="motivation" name="motivation" rows="4" placeholder="Share your goals and what you hope to achieve..."></textarea>
+                </div>
+
+                <!-- Newsletter -->
+                <div class="form-group">
+                  <div class="form-check">
+                    <input type="checkbox" id="newsletter" name="newsletter" value="1">
+                    <label for="newsletter">I would like to receive course updates and educational content via email</label>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Enroll Now</button>
+
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container_enroll">
+         
+      </div>
+    </section>
+  </div>
+  <br><br>
+
+{% include 'includes/d_footer.html' %}

@@ -9,7 +9,7 @@
       <nav class="breadcrumbs">
         <ol>
           <li><a href="/">Home</a></li>
-          <li class="current">Login</li>
+          <li class="current">Sign Up</li>
         </ol>
       </nav>
     </div>
@@ -39,49 +39,71 @@
 
             <!-- Header -->
             <div class="enrollment-header text-center mb-5" data-aos="fade-up" data-aos-delay="200">
-              <h2>Welcome Back</h2>
+              <h2>Create Account</h2>
               <!-- <p>Fill in your details to enroll in one of our beginner-friendly tech programs. Learn at your own pace, gain real-world skills, and begin your journey as a tech professional.</p> -->
             </div>
 
             <!-- Enrollment Form -->
-           <form class="enrollment-form" method="POST" action="{{ url_for('login') }}" data-aos="fade-up" data-aos-delay="300">
+            <form class="enrollment-form" method="POST" action="{{ url_for('signup') }}" data-aos="fade-up" data-aos-delay="300">
+                <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="email" class="form-label">First Name *</label>
+        <input type="text" id="email" name="fname" class="form-control" required autocomplete="name">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="tel" class="form-label">Last Name *</label>
+        <input type="tel" id="email" name="lname" class="form-control" required autocomplete="name">
+      </div>
+    </div>
+  </div>
 
-  <div class="row mb">
-    <div class="col-md">
+  <div class="row mb-4">
+    <div class="col-md-6">
       <div class="form-group">
         <label for="email" class="form-label">Email Address *</label>
         <input type="email" id="email" name="email" class="form-control" required autocomplete="email">
       </div>
     </div>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="tel" class="form-label">Phone Number *</label>
+        <input type="tel" id="email" name="phone" class="form-control" required autocomplete="tel">
+      </div>
+    </div>
   </div>
 
-  <div class="row mb-">
-    <div class="col-md-">
+  <div class="row mb-4">
+    <div class="col-md-6">
       <div class="form-group">
         <label for="password" class="form-label">Password *</label>
         <input type="password" id="password" name="password" class="form-control" required autocomplete="off">
       </div>
     </div>
+
+    <div class="col-md-6">
+      <div class="form-group">
+        <label for="confirm_password" class="form-label">Confirm Password *</label>
+        <input type="password" id="confirm_password" name="confirm_password" class="form-control" required autocomplete="off">
+      </div>
+    </div>
   </div>
 
-  <!-- Submit -->
   <div class="row">
     <div class="col-12 text-center">
       <button type="submit" class="btn btn-enroll">
         <i class="bi bi-check-circle me-2"></i>
-        Sign In
+        Sign Up
       </button>
-      <p class="enrollment-note mt-3">
-        <i class="bi bi-shield-check"></i>
-        Your details are protected
-      </p>
     </div>
   </div>
 
   <div class="row mt-3">
     <div class="col-12 text-center">
       <p>
-        Don't have an account? <a href="{{ url_for('signup') }}">Sign Up</a>
+        Already have an account? <a href="{{ url_for('login') }}">Login</a>
       </p>
     </div>
   </div>

@@ -1,18 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-
 import mysql.connector
-import re  # for simple email validation
+import re  
 
-
-# -----------------------
-# Helper Functions
-# -----------------------
 def is_valid_email(email):
-    # Basic email regex
+     
     return re.match(r"[^@]+@[^@]+\.[^@]+", email)
 
 def is_valid_phone(phone):
-    # Basic phone validation (numbers only, min 7 digits)
+    
     return phone.isdigit() and len(phone) >= 7
 
 def get_db_connection():
@@ -20,7 +15,7 @@ def get_db_connection():
         conn = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="ClassX2025@!",  # Replace with your MySQL root password
+            password="ClassX2025@!",   
             database="classx_db"
         )
         return conn
@@ -29,12 +24,8 @@ def get_db_connection():
         return None
 
 app = Flask(__name__)
-app.secret_key = "yoursecretkey"  # Needed for session and flash
-
-
-# -----------------------
-# Home Route
-# -----------------------
+app.secret_key = "yoursecretkey"   
+ 
 @app.route('/')
 def home():
     total_students = 0
@@ -51,126 +42,127 @@ def home():
             conn.close()
 
     return render_template('home.html', title='Home', total_students=total_students)
-
-
-# -----------------------
-# Login Route (GET + POST)
-# -----------------------
-# -----------------------
-# Login Route (GET + POST)
-# -----------------------
+ 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
-        phone = request.form['phone']  # password
+        password = request.form['password']
 
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
-
-        cursor.execute("SELECT * FROM enrollments WHERE email=%s AND phone=%s", (email, phone))
+ 
+        cursor.execute(
+            "SELECT * FROM users WHERE email=%s AND password=%s",
+            (email, password)
+        )
         user = cursor.fetchone()
 
         cursor.close()
         conn.close()
 
         if user:
-            session['student_id'] = user['id']
-            session['student_name'] = user['first_name']
+            session['user_id'] = user['id']
+            session['user_email'] = user['email']
             flash("Login successful!", "success")
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('dashboard'))    
         else:
-            flash("Invalid email or phone number!", "danger")
+            flash("Incorrect email or password!", "danger")
 
     return render_template('login.html', title='Login')
-
-
-
-# -----------------------
-# Logout Route
-# -----------------------
+ 
 @app.route('/logout')
 def logout():
     session.clear()
     flash("Logged out successfully!", "success")
     return redirect(url_for('home'))
-
-# -----------------------
-# Enroll Page (GET + POST)
-# -----------------------
+ 
 @app.route('/enroll', methods=['GET', 'POST'])
 def enroll():
-    # if 'user_id' not in session:
-    #     flash("Please login to enroll!", "warning")
-    #     return redirect(url_for('login'))
-
-    if request.method == 'POST':
-        # Capture all form fields
-        first_name = request.form['firstName']
-        last_name = request.form['lastName']
-        email = request.form['email']
-        phone = request.form.get('phone')
-        course = request.form['course']
-        education = request.form.get('education')
-        experience = request.form.get('experience')
-        motivation = request.form.get('motivation')
-        schedule = request.form.get('schedule')
-        newsletter = 1 if request.form.get('newsletter') else 0
-
-        # Check if email or phone already exists
-        conn = get_db_connection()
-        if conn:
-            cursor = conn.cursor()
-            try:
-                cursor.execute("SELECT * FROM enrollments WHERE email=%s OR phone=%s", (email, phone))
-                existing = cursor.fetchone()
-                if existing:
-                    flash("Email or phone number already enrolled!", "warning")
-                else:
-                    cursor.execute("""
-                        INSERT INTO enrollments
-                        (first_name, last_name, email, phone, course, education, experience, motivation, schedule, newsletter)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    """, (first_name, last_name, email, phone, course, education, experience, motivation, schedule, newsletter))
-                    conn.commit()
-                    flash("Enrollment successful!", "success")
-            except mysql.connector.Error as e:
-                flash(f"Database Error: {e}", "danger")
-            finally:
-                cursor.close()
-                conn.close()
-
-        return redirect(url_for('enroll'))
-
-    return render_template('enroll.html', title='Sign Up')
-
-# -----------------------
-# Other Routes
-# -----------------------
-# -----------------------
-# Student Dashboard
-# -----------------------
-@app.route('/dashboard')
-def dashboard():
-    if 'student_id' not in session:
-        flash("Please log in first!", "warning")
+    if 'user_id' not in session:
+        flash("Please login to enroll!", "warning")
         return redirect(url_for('login'))
-    # Fetch student info from DB
+
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM enrollments WHERE id=%s", (session['student_id'],))
-    student = cursor.fetchone()
+ 
+    cursor.execute("SELECT * FROM users WHERE id=%s", (session['user_id'],))
+    user = cursor.fetchone()
+
+    
+    if request.method == 'POST':
+         
+        first_name = request.form.get('first_name') if not user['first_name'] else user['first_name']
+        last_name = request.form.get('last_name') if not user['last_name'] else user['last_name']
+        phone = request.form.get('phone') if not user['phone'] else user['phone']
+ 
+        course = request.form.get('course')
+        experience = request.form.get('experience')
+        motivation = request.form.get('motivation')
+        newsletter = 1 if request.form.get('newsletter') else 0
+
+        try:
+            
+            cursor.execute("""
+                UPDATE users 
+                SET first_name=%s, last_name=%s, phone=%s
+                WHERE id=%s
+            """, (first_name, last_name, phone, session['user_id']))
+
+            
+            cursor.execute("""
+                INSERT INTO enrollments (user_id, course, experience, motivation, newsletter)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (session['user_id'], course, experience, motivation, newsletter))
+
+            conn.commit()
+            flash("Enrollment successful!", "success")
+            return redirect(url_for('dashboard'))
+
+        except mysql.connector.Error as e:
+            flash(f"Database Error: {e}", "danger")
+        finally:
+            cursor.close()
+            conn.close()
+    
+    
+    cursor.execute("SELECT * FROM enrollments WHERE user_id=%s", (session['user_id'],))
+    enrollments = cursor.fetchall()
+    total_courses = len(enrollments)
+
     cursor.close()
     conn.close()
-    return render_template('dashboard.html', title="Dashboard", student=student)
+
+
+    return render_template('enroll.html', title='Enroll', user=user, enrollments=enrollments, total_courses=total_courses)
+ 
+@app.route('/dashboard')
+def dashboard():
+    if 'user_id' not in session:
+        flash("Please log in first!", "warning")
+        return redirect(url_for('login'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+ 
+    cursor.execute("SELECT * FROM users WHERE id=%s", (session['user_id'],))
+    user = cursor.fetchone()
+ 
+    cursor.execute("SELECT * FROM enrollments WHERE user_id=%s", (session['user_id'],))
+    enrollments = cursor.fetchall()
+   
+    total_courses = len(enrollments)
+
+    cursor.close()
+    conn.close()
+
+    return render_template('dashboard.html', title="Dashboard", user=user, enrollments=enrollments, total_courses=total_courses)
+
+
 
 @app.route('/course')
 def course():
     return render_template('course.html', title="My Courses")
-
-# @app.route('/enroll')
-# def enroll():
-#     return render_template('enroll.html', title="Enroll New Course")
 
 @app.route('/profile')
 def profile():
@@ -215,6 +207,70 @@ def course_details():
 @app.route('/courses')
 def courses():
     return render_template('courses.html', title='Courses')
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+         
+        first_name = request.form.get('fname')
+        last_name = request.form.get('lname')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+
+        
+        if not all([first_name, last_name, email, phone, password, confirm_password]):
+            flash("Please fill in all required fields!", "warning")
+            return redirect(url_for('signup'))
+
+         
+        if password != confirm_password:
+            flash("Passwords do not match!", "danger")
+            return redirect(url_for('signup'))
+
+        
+        if not is_valid_email(email):
+            flash("Invalid email format!", "danger")
+            return redirect(url_for('signup'))
+
+     
+        if not is_valid_phone(phone):
+            flash("Invalid phone number!", "danger")
+            return redirect(url_for('signup'))
+
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        try:
+            
+            cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
+            existing = cursor.fetchone()
+
+            if existing:
+                flash("Email already exists!", "warning")
+                return redirect(url_for('signup'))
+
+             
+            cursor.execute("""
+                INSERT INTO users (first_name, last_name, email, phone, password)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (first_name, last_name, email, phone, password))
+            conn.commit()
+            flash("Account created successfully! Please log in.", "success")
+            return redirect(url_for('login'))
+
+        except mysql.connector.Error as e:
+            flash(f"Database Error: {e}", "danger")
+
+        finally:
+            cursor.close()
+            conn.close()
+
+    
+    return render_template('signup.html', title='Sign Up')
+
 
 @app.route('/events')
 def events():

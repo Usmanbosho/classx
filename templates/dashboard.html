@@ -20,7 +20,7 @@
 
   <!-- WELCOME CARD -->
 <br><br>  <br><br><section class="welcome-card">
-    <h2>Hi, {{ session['student_name'] }}</h2>
+    <h2>Hi, {{ session['user'] }}</h2>
     <p>Welcome back to your dashboard!</p>
   </section>
 
@@ -50,18 +50,28 @@
   <!-- ENROLLED COURSES LIST -->
   <h5 style="margin-left: 30px; margin-top: 30px; margin-bottom: 10px;">My Enrolled Courses</h5>
   <section class="course-wrapper">
-    {% for course in courses %}
-    <div class="course-list-panel">
-      <div class="course-list-item">
-        <h4>{{ course.course_name }}</h4>
-        <p>Instructor: {{ course.instructor }}</p>
-        <p>Schedule: {{ course.schedule }}</p>
-      </div>
-    </div>
+    {% if enrollments %}
+        {% for enrollment in enrollments %}
+        <div class="course-list-panel">
+            <div class="course-list-item">
+                <h4>{{ enrollment.course }}</h4>
+                <p>Experience Level: {{ enrollment.experience or 'N/A' }}</p>
+                {% if enrollment.motivation %}
+                <p>Motivation: {{ enrollment.motivation }}</p>
+                {% endif %}
+                {% if enrollment.newsletter %}
+                <p>Subscribed to Newsletter: Yes</p>
+                {% else %}
+                <p>Subscribed to Newsletter: No</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
     {% else %}
-    <p style="margin-left: 30px;">You have not enrolled in any courses yet.</p>
-    {% endfor %}
-  </section>
+        <p style="margin-left: 30px;">You have not enrolled in any courses yet.</p>
+    {% endif %}
+</section>
+
   <br><br><br><br><br>
   
 

@@ -8,10 +8,21 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="stylesheet" href="../static/assets/css/dashboard.css" />
   <link rel="shortcut icon" href="../static/assets/img/logo.jpg" type="image/x-icon">
- 
+ <style>
+  .fade-on-scroll {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-on-scroll.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+ </style>
 </head>
 <body>
- 
   <div class="container">
     <!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
@@ -40,7 +51,7 @@
         <hr class="divider">  
       <a href="dashboard"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
         <hr class="divider">
-      <a href="courses"><i class="fa-solid fa-book"></i> My Courses</a>
+      <a href="course"><i class="fa-solid fa-book"></i> My Courses</a>
         <hr class="divider">
       <a href="enroll"><i class="fa-solid fa-square-plus"></i> Enroll New Course</a>
         <hr class="divider">
@@ -56,5 +67,8 @@
         <hr class="divider">
     </nav>
 </aside>
+<div class=" fade-on-scroll">
+ 
+</div>
 
   
